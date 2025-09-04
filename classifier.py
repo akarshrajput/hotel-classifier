@@ -70,8 +70,11 @@ RESPONSE FORMAT - Return ONLY valid JSON (no markdown, no formatting, clean stru
   "confidence": 0.0-1.0,
   "reasoning": "Single line explanation without line breaks or special characters",
   "suggested_priority": "low/medium/high/urgent",
-  "estimated_completion_time": "Simple time estimate or null"
+  "estimated_completion_time": "Simple string like '30 minutes' or '1 hour' or null"
 }
+
+CRITICAL: estimated_completion_time must be a simple string, not an object or array.
+Example valid values: "15 minutes", "1 hour", "30-45 minutes", null
 
 Use your complete intelligence to analyze the guest message and generate appropriate responses. No hardcoded rules - pure AI analysis."""
 
@@ -163,6 +166,21 @@ Return response as valid JSON only.
                 logger.error(f"JSON parsing failed: {e}. Content: {content[:300]}")
                 # Let AI try to fix the JSON
                 return await self._handle_json_error(content, guest_message)
+            
+            # Clean up estimated_completion_time if it's not a string
+            estimated_time = result_dict.get("estimated_completion_time")
+            if estimated_time is not None and not isinstance(estimated_time, str):
+                # Convert complex objects to simple string
+                if isinstance(estimated_time, dict):
+                    # Extract time values and create a simple string
+                    time_parts = []
+                    for key, value in estimated_time.items():
+                        if isinstance(value, str):
+                            time_parts.append(value)
+                    estimated_time = ", ".join(time_parts) if time_parts else "30 minutes"
+                else:
+                    estimated_time = str(estimated_time)
+                result_dict["estimated_completion_time"] = estimated_time
             
             # Convert AI response to Pydantic models
             categories = []
