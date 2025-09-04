@@ -3,6 +3,7 @@
 ## Step-by-Step Deployment Guide (0 to 100%)
 
 ### 📋 Prerequisites
+
 - GitHub account
 - Render account (free at render.com)
 - Your Mistral AI API key
@@ -46,6 +47,7 @@ git push -u origin main
 ### 🔑 Step 4: Set Environment Variables
 
 In Render Dashboard → Environment:
+
 ```
 MISTRAL_API_KEY = your_actual_mistral_api_key_here
 ENVIRONMENT = production
@@ -77,6 +79,7 @@ curl -X POST "https://your-service-name.onrender.com/classify" \
 ### 📚 API Documentation
 
 Your live docs will be available at:
+
 - Interactive Docs: `https://your-service-name.onrender.com/docs`
 - ReDoc: `https://your-service-name.onrender.com/redoc`
 
