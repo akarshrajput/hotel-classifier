@@ -1,6 +1,6 @@
 import os
 from typing import List, Dict, Any
-from langchain_mistralai import ChatMistralAI
+from langchain_groq import ChatGroq
 from langchain.schema import HumanMessage, SystemMessage
 from langchain.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticOutputParser
@@ -11,10 +11,10 @@ from models import ClassificationResponse, CategoryResponse, ServiceCategory
 logger = logging.getLogger(__name__)
 
 class IntelligentServiceClassifier:
-    def __init__(self, api_key: str, model_name: str = "mistral-large-latest"):
-        self.llm = ChatMistralAI(
-            api_key=api_key,
-            model=model_name,
+    def __init__(self, api_key: str, model_name: str = "llama-3.1-8b-instant"):
+        self.llm = ChatGroq(
+            groq_api_key=api_key,
+            model_name=model_name,
             temperature=0.1,
             max_tokens=2000
         )

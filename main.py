@@ -28,11 +28,11 @@ async def lifespan(app: FastAPI):
     # Startup
     global classifier
     try:
-        api_key = os.getenv("MISTRAL_API_KEY")
+        api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
-            raise ValueError("MISTRAL_API_KEY environment variable is required")
+            raise ValueError("GROQ_API_KEY environment variable is required")
         
-        model_name = os.getenv("MODEL_NAME", "mistral-large-latest")
+        model_name = os.getenv("MODEL_NAME", "llama-3.1-8b-instant")
         classifier = IntelligentServiceClassifier(api_key=api_key, model_name=model_name)
         logger.info("Intelligent Service Classifier initialized successfully")
         
