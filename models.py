@@ -27,6 +27,7 @@ class ClassificationResponse(BaseModel):
     reasoning: str
     suggested_priority: str = Field(..., description="overall priority: low, medium, high, urgent")
     estimated_completion_time: Optional[str] = Field(None, description="AI estimated time to complete")
+    reply: str = Field(..., description="AI-generated polite response message to the guest")
 
 class HealthResponse(BaseModel):
     status: str

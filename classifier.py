@@ -56,6 +56,14 @@ CRITICAL RULES:
 4. ALL data must be AI-generated - no hardcoded responses
 5. Generate contextual, intelligent messages for each category
 6. For non-actionable messages, set should_create_ticket: false and provide empty categories array
+7. ALWAYS generate a polite "reply" field with a brief acknowledgment message for the guest
+
+REPLY FIELD GUIDELINES:
+- Generate a polite, professional single-line response to acknowledge the guest's request
+- For service requests: Confirm what will be done (e.g., "Sure, two coffees will be delivered and housekeeping will clean your room")
+- For greetings/thanks: Provide a courteous acknowledgment (e.g., "Thank you for your kind words, we're delighted to serve you")
+- For complaints: Show empathy and assurance (e.g., "We sincerely apologize for the inconvenience and will address this immediately")
+- Keep replies concise, warm, and professional
 
 RESPONSE FORMAT - Return ONLY valid JSON (no markdown, no formatting, clean structure):
 {
@@ -70,11 +78,19 @@ RESPONSE FORMAT - Return ONLY valid JSON (no markdown, no formatting, clean stru
   "confidence": 0.0-1.0,
   "reasoning": "Single line explanation without line breaks or special characters",
   "suggested_priority": "low/medium/high/urgent",
-  "estimated_completion_time": "Simple string like '30 minutes' or '1 hour' or null"
+  "estimated_completion_time": "Simple string like '30 minutes' or '1 hour' or null",
+  "reply": "REQUIRED: Single line polite response message to acknowledge guest request"
 }
+
+IMPORTANT: The "reply" field is MANDATORY and must always be included in your response.
 
 CRITICAL: estimated_completion_time must be a simple string, not an object or array.
 Example valid values: "15 minutes", "1 hour", "30-45 minutes", null
+
+REPLY FIELD EXAMPLES:
+- Service request: "Certainly! Two coffees will be delivered to your room and housekeeping will clean your room shortly."
+- Greeting: "Thank you for your kind words, we're delighted to serve you!"
+- Complaint: "We sincerely apologize for the inconvenience and will address this immediately."
 
 Use your complete intelligence to analyze the guest message and generate appropriate responses. No hardcoded rules - pure AI analysis."""
 
@@ -202,7 +218,8 @@ Return response as valid JSON only.
                 confidence=result_dict.get("confidence", 0.0),
                 reasoning=result_dict.get("reasoning", "AI classification completed"),
                 suggested_priority=result_dict.get("suggested_priority") or "low",
-                estimated_completion_time=result_dict.get("estimated_completion_time")
+                estimated_completion_time=result_dict.get("estimated_completion_time"),
+                reply=result_dict.get("reply", "Thank you for your message, we will assist you shortly.")
             )
                 
         except Exception as e:
@@ -214,7 +231,8 @@ Return response as valid JSON only.
                 confidence=0.0,
                 reasoning=f"AI classification failed: {str(e)}",
                 suggested_priority="low",
-                estimated_completion_time=None
+                estimated_completion_time=None,
+                reply="Thank you for your message, we will assist you shortly."
             )
     
     async def _handle_json_error(self, broken_content: str, original_message: str) -> ClassificationResponse:
@@ -262,7 +280,8 @@ Return ONLY valid JSON without any markdown or explanation.
                 confidence=result_dict.get("confidence", 0.0),
                 reasoning=result_dict.get("reasoning", "AI JSON repair completed"),
                 suggested_priority=result_dict.get("suggested_priority", "low"),
-                estimated_completion_time=result_dict.get("estimated_completion_time")
+                estimated_completion_time=result_dict.get("estimated_completion_time"),
+                reply=result_dict.get("reply", "Thank you for your patience, we will assist you shortly.")
             )
             
         except Exception as e:
@@ -273,7 +292,8 @@ Return ONLY valid JSON without any markdown or explanation.
                 confidence=0.0,
                 reasoning="AI unable to process request - JSON repair failed",
                 suggested_priority="low",
-                estimated_completion_time=None
+                estimated_completion_time=None,
+                reply="Thank you for your message, we are experiencing technical difficulties but will assist you shortly."
             )
     
     def _parse_fallback_response(self, content: str) -> Dict[str, Any]:
